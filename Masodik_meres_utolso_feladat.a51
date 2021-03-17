@@ -1,18 +1,18 @@
         CSEG    AT      0
         LJMP    0030H
         
+        
         CSEG    AT      0030H
         LCALL   S_INIT_SERIAL_9600
         MOV     P1,#1
 MAIN_PROGRAM_LOOP:
         LCALL   HALF_SEC_DELAY
-        CPL     PSW.1          ;ez a bit is szabad
+        CPL     F0              ;Ez egy szabadon felhasznalhato bit a PSW regiszterben
         LCALL   VILLOGO
-        JNB     PSW.1,SKIP_FUTOFENY
-        LCALL   FUTOFENY
+        JNB     F0,SKIP_FUTOFENY;Csak minden masodik alkalommal 
+        LCALL   FUTOFENY        ;futtatjuk le a futofeny lepteteset (0.5*2 = 1 sec)
 SKIP_FUTOFENY:
-        LCALL   S_SERIAL_POLLING_READ
-        LCALL   S_SERIAL_POLLING_WRITE
+        LCALL   S_SERIAL_LOOPBACK_WITH_POLLING
         LJMP    MAIN_PROGRAM_LOOP
 END_OF_PROGRAM:
         LJMP    END_OF_PROGRAM
@@ -27,26 +27,12 @@ S_INIT_SERIAL_9600:
         SETB    TI
         RET             
 
-S_SERIAL_POLLING_READ:
+S_SERIAL_LOOPBACK_WITH_POLLING:
         JNB     RI,NEW_DATA_NOT_AVAILABLE_IN_SBUF
         CLR     RI
-        MOV     A,SBUF
-        SETB    F0      ;PSW.5
+        MOV     SBUF,SBUF
 NEW_DATA_NOT_AVAILABLE_IN_SBUF:
         RET
-        
-        
-S_SERIAL_POLLING_WRITE:
-;Teszteljuk TI es F0 erteket is!
-        JNB     F0,NO_NEW_DATA ;van uj adat?
-        JNB     TI,NO_NEW_DATA ;az elozo irast befejeztuk?
-;ha mindketto teljesul, akkor:
-        CLR     TI
-        CLR     F0
-        MOV     SBUF,A
-NO_NEW_DATA:
-        RET
-        
         
 FUTOFENY:
         PUSH    ACC     ;Elmentem az akkumulatort
@@ -55,8 +41,6 @@ FUTOFENY:
         MOV     P1,A
         POP     ACC     ;visszaallitom az akkumulator erteket
         RET
-        
-        
 VILLOGO:
         PUSH    ACC     ;Elmentem az akkumulatort
         MOV     A,P3    ;mert itt mar megvaltozik az erteke
@@ -65,14 +49,14 @@ VILLOGO:
         POP     ACC     ;visszaallitom az akkumulator erteket
         RET
         
-        
 HALF_SEC_DELAY:	
         MOV	R2,#120
-        MOV	R3,#129
-        MOV	R4,#4
-        DJNZ	R2,$
-        DJNZ	R3,$-2
-        DJNZ	R4,$-4
-        RET
-       
+	MOV	R3,#129
+	MOV	R4,#4
+	DJNZ	R2,$
+	DJNZ	R3,$-2
+	DJNZ	R4,$-4
+	RET
+
+ 
         END
