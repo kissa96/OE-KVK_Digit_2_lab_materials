@@ -10,7 +10,7 @@ MAIN_PROGRAM_LOOP:
         CPL     F0              ;Ez egy szabadon felhasznalhato bit a PSW regiszterben
         LCALL   S_VILLOGO
         JNB     F0,SKIP_FUTOFENY;Csak minden masodik alkalommal 
-        LCALL   S_FUTOFENY        ;futtatjuk le a futofeny lepteteset (0.5*2 = 1 sec)
+        LCALL   S_FUTOFENY      ;futtatjuk le a futofeny lepteteset (0.5*2 = 1 sec)
 SKIP_FUTOFENY:
         LCALL   S_SERIAL_LOOPBACK_WITH_POLLING
         LJMP    MAIN_PROGRAM_LOOP
