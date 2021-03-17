@@ -6,11 +6,11 @@
         LCALL   S_INIT_SERIAL_9600
         MOV     P1,#1
 MAIN_PROGRAM_LOOP:
-        LCALL   HALF_SEC_DELAY
+        LCALL   S_HALF_SEC_DELAY
         CPL     F0              ;Ez egy szabadon felhasznalhato bit a PSW regiszterben
-        LCALL   VILLOGO
+        LCALL   S_VILLOGO
         JNB     F0,SKIP_FUTOFENY;Csak minden masodik alkalommal 
-        LCALL   FUTOFENY        ;futtatjuk le a futofeny lepteteset (0.5*2 = 1 sec)
+        LCALL   S_FUTOFENY        ;futtatjuk le a futofeny lepteteset (0.5*2 = 1 sec)
 SKIP_FUTOFENY:
         LCALL   S_SERIAL_LOOPBACK_WITH_POLLING
         LJMP    MAIN_PROGRAM_LOOP
@@ -34,14 +34,14 @@ S_SERIAL_LOOPBACK_WITH_POLLING:
 NEW_DATA_NOT_AVAILABLE_IN_SBUF:
         RET
         
-FUTOFENY:
+S_FUTOFENY:
         PUSH    ACC     ;Elmentem az akkumulatort
         MOV     A,P1    ;mert itt mar megvaltozik az erteke
         RL      A
         MOV     P1,A
         POP     ACC     ;visszaallitom az akkumulator erteket
         RET
-VILLOGO:
+S_VILLOGO:
         PUSH    ACC     ;Elmentem az akkumulatort
         MOV     A,P3    ;mert itt mar megvaltozik az erteke
         CPL     A
@@ -49,7 +49,7 @@ VILLOGO:
         POP     ACC     ;visszaallitom az akkumulator erteket
         RET
         
-HALF_SEC_DELAY:	
+S_HALF_SEC_DELAY:	
         MOV	R2,#120
 	MOV	R3,#129
 	MOV	R4,#4
