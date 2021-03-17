@@ -14,10 +14,14 @@ MAIN_PROGRAM_LOOP:
 SKIP_FUTOFENY:
         LCALL   S_SERIAL_LOOPBACK_WITH_POLLING
         LJMP    MAIN_PROGRAM_LOOP
+	
+	
+	
 END_OF_PROGRAM:
         LJMP    END_OF_PROGRAM
         
-        
+;SZUBRUTINOK MINDIG A LEZARO VEGTELEN CIKLUS UTAN!
+
 S_INIT_SERIAL_9600:
         MOV     SCON,#50H       ;Baud generalas
         ANL     TMOD,#0DFH      ;az idozitovel
